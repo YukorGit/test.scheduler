@@ -1,0 +1,52 @@
+version: '3'
+
+networks:
+    backend:
+
+services:
+
+    nginx:
+        image: nginx:1.20.2
+        container_name: nginx-${SPACE_NAME}
+        ports:
+            - "${NGINX_PORT}:80"
+        volumes:
+            - ${APP_PATH}:/var/www
+            - ./nginx/conf.d:/etc/nginx/conf.d
+        depends_on:
+            - php-8
+        networks:
+            - backend
+    pg-test:
+        container_name: pg-${SPACE_NAME}
+        image: postgres:15
+        environment:
+            POSTGRES_DB: my_db
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        ports:
+            - "${POSTGRES_PORT}:5432"
+        networks:
+            - backend
+
+    php-8:
+        build:
+            context: php
+        working_dir: /var/www
+        container_name: php-${SPACE_NAME}
+        volumes:
+            - ${APP_PATH}:/var/www
+            - ./php/php.ini:/usr/local/etc/php/php.ini
+        ports:
+            - "${PHP_PORT}:9000"
+            - "6001:6001"
+        depends_on:
+            - pg-test
+        networks:
+            - backend
+volumes:
+    postgres_data:
+
+
