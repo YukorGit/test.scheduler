@@ -23,14 +23,14 @@ class BusController extends Controller
             'to' => 'required|exists:stops,id',
         ]);
 
-            /*try {*/
+            try {
             $stopFrom = Stop::find($request->input('from'));
             $stopTo = Stop::find($request->input('to'));
 
             $buses = $schedulerService->getNextBuses($request->query('from'), $request->query('to'));
-        /*} catch (\Exception $e) {
+        } catch (\Exception $e) {
             return response()->json(['error' => 'Ошибка'], 500);
-        }*/
+        }
 
         return response()->json([
             'from' => $stopFrom->name,

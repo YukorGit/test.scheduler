@@ -22,11 +22,12 @@ class SchedulerService
         foreach (Route::getRoutesByStops($fromStopId, $toStopId) as $route) {
             $fromStop = $route->routeStops->firstWhere('stop_id', $fromStopId);
             $toStop = $route->routeStops->firstWhere('stop_id', $toStopId);
-            $directionIsCorrect = false;
 
-            if ($fromStop && $toStop) {
-                $directionIsCorrect = $fromStop->stop_order < $toStop->stop_order;
+            if (!$fromStop | !$toStop) {
+                continue;
             }
+
+            $directionIsCorrect = $fromStop->stop_order < $toStop->stop_order;
 
             if ($directionIsCorrect) {
                 $nextArrivals = $this->getArrivalsTime($fromStop, $count);
